@@ -57,6 +57,7 @@ async def extract_from_page(url: str):
             print(f"{i:02d}: {link}")
 
         await browser.close()
+        return jpg_links
 
 
 if __name__ == "__main__":
