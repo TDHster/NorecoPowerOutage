@@ -3,9 +3,12 @@ services:
     container_name: noreco_power_outage
     build: .
     restart: unless-stopped
-
     env_file:
       - .env
+    environment:
+      # Добавляем переменные явно, если нужно
+      - PYTHONPATH=/app
+      - TZ=Asia/Manila  # Устанавливаем часовой пояс для cron
     volumes:
       - ./.env:/app/.env:ro  
 
