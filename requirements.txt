@@ -1,6 +1,7 @@
 playwright
 requests
 numpy==1.26.4
+Pillow
 # easyocr
 # paddleocr
 # paddlepaddle
