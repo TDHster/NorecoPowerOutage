@@ -171,10 +171,6 @@ logger.info("Processing started")
 logger.debug("Detailed debug information")
 ```
 
-## 📝 License
-
-This project is licensed under the MIT License.
-
 ## 🤝 Contributing
 
 1. Fork the repository
