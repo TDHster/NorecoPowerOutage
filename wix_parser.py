@@ -3,41 +3,44 @@ import asyncio
 import re
 from urllib.parse import unquote
 from playwright.async_api import async_playwright, TimeoutError as PlaywrightTimeout
-
+from logger import logger
+from config import config
 
 def extract_wix_jpgs_from_html(html: str) -> list[str]:
     html = unquote(html)
-    pattern = r"https://static\.wixstatic\.com/media/[^\"\'\s>\\]+?\.jpg"
+    # pattern = r"https://static\.wixstatic\.com/media/[^\"\'\s>\\]+?\.jpg"
+    pattern = rf"{config.MEDIA_FILE_ON_SITE_PATTERN}"
     matches = re.findall(pattern, html, flags=re.IGNORECASE)
     return sorted(set(matches))
 
 
 async def click_carousel_until_end(page, max_clicks=30):
-    print("\n🔄 Прокручиваем карусель…")
+    logger.debug("\nClicking carousel…")
     last_html = ""
     for i in range(max_clicks):
         button = await page.query_selector('button[data-hook="nav-arrow-next"]')
         if not button:
-            print("⛔ Кнопка 'вперёд' не найдена.")
+            logger.debug("Button 'next' not found, seems to be finish.")
             break
 
         is_visible = await button.is_visible()
         is_enabled = await button.is_enabled()
         if not (is_visible and is_enabled):
-            print("✅ Кнопка больше неактивна — достигнут конец карусели.")
+            logger.debug("Button 'next' not acitve, seems to be finish.")
             break
 
         try:
             await button.click()
+            logger.debug('"Clicking" Next button')
             await page.wait_for_timeout(600)  # дать время на загрузку
 
             new_html = await page.content()
             if new_html == last_html:
-                print("🟡 HTML больше не меняется — возможно, всё загружено.")
+                logger.debug("HTML not changed, seems to be finish.")
                 break
             last_html = new_html
         except PlaywrightTimeout:
-            print("⚠️ Таймаут при ожидании загрузки.")
+            logger.debug("Timeout while loading.")
             break
 
 

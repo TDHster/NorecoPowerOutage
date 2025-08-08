@@ -1,11 +1,19 @@
 # config.py
-
-from pydantic import BaseSettings
+from pydantic_settings import BaseSettings
 
 class Settings(BaseSettings):
+    TELEGRAM_BOT_API: str
+    TELEGRAM_GROUP_ID: str
+    LOG_LEVEL: str = "INFO"  # Значение по умолчанию
+    MEDIA_FILE_ON_SITE_PATTERN: str
+    URL: str
 
     class Config:
-        env_file = ".env"  # если файл есть — берёт оттуда, если нет — игнорирует
+        env_file = ".env"   # сначала ищет в env, потом в .env
+        env_file_encoding = "utf-8"
+
+# Создаём один общий экземпляр, который можно импортировать везде
+config = Settings()
 
 #Example usage:
 # from config import config

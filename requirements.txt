@@ -5,3 +5,4 @@ easyocr
 # paddleocr
 # paddlepaddle
 aiogram
+pydantic-settings
