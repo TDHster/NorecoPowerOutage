@@ -2,5 +2,6 @@ playwright
 requests
 numpy==1.26.4
 easyocr
-paddleocr
-paddlepaddle
+# paddleocr
+# paddlepaddle
+aiogram

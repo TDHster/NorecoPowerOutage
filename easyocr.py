@@ -2,6 +2,7 @@ from pathlib import Path
 from PIL import Image, ImageEnhance
 import easyocr
 
+from logger import logger
 
 def enhance_image_steps(img_path: Path) -> Image.Image:
     """
@@ -22,25 +23,25 @@ def recognize_text_in_folder(folder: Path, lang: str = "en"):
     jpg_files = list(folder.glob("*.jpg"))
 
     if not jpg_files:
-        print("🛑 Нет JPG-файлов в папке:", folder)
+        logger.info("🛑 Нет JPG-файлов в папке:", folder)
         return
 
     print(f"🔍 Найдено {len(jpg_files)} .jpg-файлов в {folder}")
 
     for i, img_path in enumerate(jpg_files, 1):
-        print(f"\n[{i}/{len(jpg_files)}] 🖼️ Обрабатывается: {img_path.name}")
+        logger.debug(f"\n[{i}/{len(jpg_files)}] 🖼️ Обрабатывается: {img_path.name}")
 
         try:
             image = enhance_image_steps(img_path)
         except Exception as e:
-            print(f"⚠️ Не удалось обработать {img_path.name}: {e}")
+            logger.error(f"⚠️ Не удалось обработать {img_path.name}: {e}")
             continue
         
         try:
             # Распознаём текст прямо с Pillow-объекта
             results = reader.readtext(image)
         except Exception as e:
-            print(f"⚠️ Ошибка OCR для {img_path.name}: {e}")
+            logger.error(f"⚠️ Ошибка OCR для {img_path.name}: {e}")
             continue
 
         text_lines = [res[1] for res in results]
@@ -49,9 +50,9 @@ def recognize_text_in_folder(folder: Path, lang: str = "en"):
         txt_path = img_path.with_suffix(".txt")
         txt_path.write_text(full_text, encoding="utf-8")
 
-        print(f"✅ Текст сохранён в: {txt_path.name}")
+        logger.debug(f"✅ Текст сохранён в: {txt_path.name}")
 
-    print("\n🎉 Распознавание завершено.")
+    logger.info("\n🎉 Распознавание завершено.")
 
 
 if __name__ == "__main__":
