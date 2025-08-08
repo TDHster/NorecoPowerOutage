@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/playwright/python:v1.40.0-jammy
+FROM mcr.microsoft.com/playwright/python:v1.54.0-jammy
 
 WORKDIR /app
 
@@ -43,12 +43,17 @@ RUN touch /var/log/cron.log && chmod 666 /var/log/cron.log
 # Создаем entrypoint скрипт
 RUN echo '#!/bin/bash' > /entrypoint.sh && \
     echo 'echo "Container started at $(date)"' >> /entrypoint.sh && \
+    echo '# Очищаем старые cron задачи' >> /entrypoint.sh && \
+    echo 'crontab -r 2>/dev/null || true' >> /entrypoint.sh && \
     echo '# Копируем переменные окружения для cron' >> /entrypoint.sh && \
     echo 'printenv | grep -v "^_" > /etc/environment' >> /entrypoint.sh && \
     echo '# Устанавливаем cron задачу' >> /entrypoint.sh && \
     echo 'crontab /etc/cron.d/cleanup-cron' >> /entrypoint.sh && \
     echo 'echo "Cron jobs installed:"' >> /entrypoint.sh && \
     echo 'crontab -l' >> /entrypoint.sh && \
+    echo '# Тестируем скрипт сразу' >> /entrypoint.sh && \
+    echo 'echo "Testing script execution..."' >> /entrypoint.sh && \
+    echo '/app/run_script.sh' >> /entrypoint.sh && \
     echo '# Запускаем cron в фоне' >> /entrypoint.sh && \
     echo 'cron' >> /entrypoint.sh && \
     echo '# Следим за логами' >> /entrypoint.sh && \
