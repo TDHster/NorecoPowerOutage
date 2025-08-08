@@ -11,7 +11,7 @@ def extract_wix_jpgs_from_html(html: str) -> list[str]:
     html = unquote(html)
     # pattern = r"https://static\.wixstatic\.com/media/[^\"\'\s>\\]+?\.jpg"
     # pattern = rf"{config.MEDIA_FILE_ON_SITE_PATTERN}"
-    pattern = r"{https://static\.wixstatic\.com/media/[^\"\'\s>\\]+?\.jpg"
+    pattern = r"https://static\.wixstatic\.com/media/[^\"\'\s>\\]+?\.jpg"
     matches = re.findall(pattern, html, flags=re.IGNORECASE)
     return sorted(set(matches))
 
