@@ -1,17 +1,16 @@
 # save_images_from_links.py
+
 import time
 import random
 import requests
 from pathlib import Path
 from urllib.parse import urlparse
 
-
 def save_images(urls: list[str], save_dir: Path = Path("images")):
     save_dir.mkdir(parents=True, exist_ok=True)
 
     for i, url in enumerate(urls, 1):
         try:
-            # Получаем имя файла из URL
             filename = Path(urlparse(url).path).name
             filepath = save_dir / filename
 
@@ -26,14 +25,15 @@ def save_images(urls: list[str], save_dir: Path = Path("images")):
             filepath.write_bytes(response.content)
             print(f"    ✅ Сохранено: {filepath}")
 
-            time.sleep(random.uniform(2, 4))
+            time.sleep(random.uniform(2, 4))  # Антибот-таймер
 
+        except requests.exceptions.RequestException as e:
+            print(f"{i:02d}. ❌ Ошибка сети при скачивании {url}: {e}")
         except Exception as e:
-            print(f"{i:02d}. ❌ Ошибка при скачивании {url}: {e}")
+            print(f"{i:02d}. ❌ Неизвестная ошибка: {e}")
 
 
 if __name__ == "__main__":
-    # Пример: список URL
     links = [        
         "https://static.wixstatic.com/media/2c4ad4_bccbf1f594b44d9484d912309625039b~mv2.jpg",
         "https://static.wixstatic.com/media/2c4ad4_c24606f017bd405e8152605ddd9bef59~mv2.jpg",
