@@ -5,10 +5,10 @@ import random
 import requests
 from pathlib import Path
 from urllib.parse import urlparse
-
+from config import config
 from logger import logger
 
-def save_images(urls: list[str], save_dir: Path = Path("images")) -> list[Path]:
+def save_images(urls: list[str], save_dir: Path = Path(config.IMAGES_DIR)) -> list[Path]:
     save_dir.mkdir(parents=True, exist_ok=True)
     saved_files = []
 
@@ -29,7 +29,7 @@ def save_images(urls: list[str], save_dir: Path = Path("images")) -> list[Path]:
             saved_files.append(filepath)  # добавляем только что сохранённый файл
             logger.info(f"    ✅ Сохранено: {filepath}")
 
-            time.sleep(random.uniform(2, 4))  # Антибот-таймер
+            time.sleep(random.uniform(2, 5))  # Антибот-таймер
 
         except requests.exceptions.RequestException as e:
             logger.error(f"{i:02d}. ❌ network error {url}: {e}")

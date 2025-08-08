@@ -5,6 +5,7 @@ from urllib.parse import unquote
 from playwright.async_api import async_playwright, TimeoutError as PlaywrightTimeout
 from logger import logger
 from config import config
+from random import randint
 
 def extract_wix_jpgs_from_html(html: str) -> list[str]:
     html = unquote(html)
@@ -15,7 +16,7 @@ def extract_wix_jpgs_from_html(html: str) -> list[str]:
 
 
 async def click_carousel_until_end(page, max_clicks=30):
-    logger.debug("\nClicking carousel…")
+    logger.debug(f"Clicking carousel at {config.URL}")
     last_html = ""
     for i in range(max_clicks):
         button = await page.query_selector('button[data-hook="nav-arrow-next"]')
@@ -30,10 +31,11 @@ async def click_carousel_until_end(page, max_clicks=30):
             break
 
         try:
+            await asyncio.sleep(randint(1, 3)) # seconds
             await button.click()
             logger.debug('"Clicking" Next button')
-            await page.wait_for_timeout(600)  # дать время на загрузку
-
+            await page.wait_for_timeout(600)  
+            
             new_html = await page.content()
             if new_html == last_html:
                 logger.debug("HTML not changed, seems to be finish.")
@@ -53,14 +55,14 @@ async def extract_from_page(url: str):
         await click_carousel_until_end(page)
 
         html = await page.content()
-        jpg_links = extract_wix_jpgs_from_html(html)
+        image_links = extract_wix_jpgs_from_html(html)
 
-        print(f"\n🖼️ Найдено {len(jpg_links)} JPG-ссылок на wixstatic.com/media/:\n")
-        for i, link in enumerate(jpg_links, 1):
+        logger.info(f"Founded {len(image_links)} at wixstatic.com/media/:\n")
+        for i, link in enumerate(image_links, 1):
             print(f"{i:02d}: {link}")
 
         await browser.close()
-        return jpg_links
+        return image_links
 
 
 if __name__ == "__main__":

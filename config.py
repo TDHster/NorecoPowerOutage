@@ -4,9 +4,10 @@ from pydantic_settings import BaseSettings
 class Settings(BaseSettings):
     TELEGRAM_BOT_API: str
     TELEGRAM_GROUP_ID: str
-    LOG_LEVEL: str = "INFO"  # Значение по умолчанию
+    LOG_LEVEL: str = "INFO"  
     MEDIA_FILE_ON_SITE_PATTERN: str
     URL: str
+    IMAGES_DIR: str = "images"
 
     class Config:
         env_file = ".env"   # сначала ищет в env, потом в .env
