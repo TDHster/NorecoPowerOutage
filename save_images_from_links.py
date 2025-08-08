@@ -6,8 +6,16 @@ import requests
 from pathlib import Path
 from urllib.parse import urlparse
 
-def save_images(urls: list[str], save_dir: Path = Path("images")):
+from pathlib import Path
+from urllib.parse import urlparse
+import requests
+import random
+import time
+
+
+def save_images(urls: list[str], save_dir: Path = Path("images")) -> list[Path]:
     save_dir.mkdir(parents=True, exist_ok=True)
+    saved_files = []
 
     for i, url in enumerate(urls, 1):
         try:
@@ -23,6 +31,7 @@ def save_images(urls: list[str], save_dir: Path = Path("images")):
             response.raise_for_status()
 
             filepath.write_bytes(response.content)
+            saved_files.append(filepath)  # добавляем только что сохранённый файл
             print(f"    ✅ Сохранено: {filepath}")
 
             time.sleep(random.uniform(2, 4))  # Антибот-таймер
@@ -31,6 +40,9 @@ def save_images(urls: list[str], save_dir: Path = Path("images")):
             print(f"{i:02d}. ❌ Ошибка сети при скачивании {url}: {e}")
         except Exception as e:
             print(f"{i:02d}. ❌ Неизвестная ошибка: {e}")
+
+    return saved_files
+
 
 
 if __name__ == "__main__":
