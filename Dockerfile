@@ -1,16 +1,30 @@
 FROM python:3.11-slim
 
-# for healthcheck via pgrep need procps
-RUN apt-get update && apt-get install -y --no-install-recommends procps \
- && apt-get clean && rm -rf /var/lib/apt/lists/*
-
 WORKDIR /app
 
-# For effective caching dependencies
+# Устанавливаем cron и системные зависимости
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    cron \
+    && rm -rf /var/lib/apt/lists/*
+
+# Устанавливаем Python-зависимости (для кэширования сначала только файл)
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# (except.dockerignore)
+# Копируем всё приложение
 COPY . .
 
-CMD ["python", "main.py"]
+# Копируем файл с задачей для cron
+COPY crontab.txt /etc/cron.d/cleanup-cron
+
+# Даем права на cron файл
+RUN chmod 0644 /etc/cron.d/cleanup-cron
+
+# Регистрируем cron задачи
+RUN crontab /etc/cron.d/cleanup-cron
+
+# Создаем лог файл
+RUN touch /var/log/cron.log
+
+# Запуск cron в форграунде
+CMD ["cron", "-f"]

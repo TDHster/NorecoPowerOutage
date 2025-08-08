@@ -1,24 +1,13 @@
 services:
-# next line word "image" define image name
-  image:
-    container_name: CHANGE_TO_YOUR_Container_name  
+  noreco_power_outage:
+    container_name: noreco_power_outage
     build: .
-    # mem_limit: 256m      # max 256MB
-    # cpus: 0.5            # max 50% one CPU
-
-    # env_file
-    # - .env  # load as system env docker-compose.yml
-    volumes:
-      - ./.env:/app/.env  # because python-dotenv
-    healthcheck:
-      test: ["CMD-SHELL", "pgrep -f '^python .*main.py$' > /dev/null || exit 1"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 10s
     restart: unless-stopped
 
-    logging:  # limiting logs
+    env_file:
+      - .env
+
+    logging:
       driver: "json-file"
       options:
         max-size: "10m"
