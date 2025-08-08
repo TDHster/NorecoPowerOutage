@@ -14,6 +14,7 @@ async def send_images_to_group(image_paths: List[Union[str, Path]]) -> None:
     bot = Bot(token=settings.TELEGRAM_BOT_API)
     
     try:
+        logger.info(f'Getted {len(image_paths)} to send to telegram')
         for image_path in image_paths:
             path = Path(image_path)
             if path.exists() and path.suffix.lower() in ['.jpg', '.jpeg', '.png', '.gif']:

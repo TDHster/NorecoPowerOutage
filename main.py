@@ -23,9 +23,7 @@ async def main():
     logger.info(f'Founded {len(new_images_names)} new images.')
 
     all_filenames_from_urls = [Path(urlparse(u).path).name for u in links]
-    print(all_filenames_from_urls)
-    
-    # keep_list = ["image1.jpg", "photo2.jpg", "logo.jpg"]
+    # print(all_filenames_from_urls)    
     delete_unlisted(all_filenames_from_urls)
     
     # logger.info("🔎 Запускаем распознавание текста...")
