@@ -1,14 +1,13 @@
-FROM python:3.11-slim
+FROM mcr.microsoft.com/playwright/python:v1.40.0-jammy
 
 WORKDIR /app
 
-# Устанавливаем cron и системные зависимости
+# Устанавливаем cron
 RUN apt-get update && apt-get install -y --no-install-recommends \
     cron \
-    bash \
     && rm -rf /var/lib/apt/lists/*
 
-# Устанавливаем Python-зависимости (для кэширования сначала только файл)
+# Устанавливаем Python-зависимости
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
@@ -28,7 +27,7 @@ RUN echo '#!/bin/bash' > /app/run_script.sh && \
     echo '  echo "$(date): .env file not found!" >> /var/log/cron.log' >> /app/run_script.sh && \
     echo 'fi' >> /app/run_script.sh && \
     echo 'echo "$(date): Starting Python script" >> /var/log/cron.log' >> /app/run_script.sh && \
-    echo '/usr/local/bin/python /app/main.py >> /var/log/cron.log 2>&1' >> /app/run_script.sh && \
+    echo 'python /app/main.py >> /var/log/cron.log 2>&1' >> /app/run_script.sh && \
     echo 'echo "$(date): Python script finished with exit code: $?" >> /var/log/cron.log' >> /app/run_script.sh && \
     chmod +x /app/run_script.sh
 
