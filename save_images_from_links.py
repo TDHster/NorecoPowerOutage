@@ -6,12 +6,7 @@ import requests
 from pathlib import Path
 from urllib.parse import urlparse
 
-from pathlib import Path
-from urllib.parse import urlparse
-import requests
-import random
-import time
-
+from logger import logger
 
 def save_images(urls: list[str], save_dir: Path = Path("images")) -> list[Path]:
     save_dir.mkdir(parents=True, exist_ok=True)
@@ -23,23 +18,23 @@ def save_images(urls: list[str], save_dir: Path = Path("images")) -> list[Path]:
             filepath = save_dir / filename
 
             if filepath.exists():
-                print(f"{i:02d}. ⏭️ Уже скачано: {filename}")
+                logger.debug(f"{i:02d}. ⏭️ Уже скачано: {filename}")
                 continue
 
-            print(f"{i:02d}. ⬇️ Скачиваю: {url}")
+            logger.debug(f"{i:02d}. ⬇️ Скачиваю: {url}")
             response = requests.get(url, timeout=15)
             response.raise_for_status()
 
             filepath.write_bytes(response.content)
             saved_files.append(filepath)  # добавляем только что сохранённый файл
-            print(f"    ✅ Сохранено: {filepath}")
+            logger.info(f"    ✅ Сохранено: {filepath}")
 
             time.sleep(random.uniform(2, 4))  # Антибот-таймер
 
         except requests.exceptions.RequestException as e:
-            print(f"{i:02d}. ❌ Ошибка сети при скачивании {url}: {e}")
+            logger.error(f"{i:02d}. ❌ network error {url}: {e}")
         except Exception as e:
-            print(f"{i:02d}. ❌ Неизвестная ошибка: {e}")
+            logger.error(f"{i:02d}. ❌ Unknown error: {e}")
 
     return saved_files
 

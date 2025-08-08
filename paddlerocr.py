@@ -2,6 +2,7 @@ from pathlib import Path
 from PIL import Image, ImageEnhance
 from paddleocr import PaddleOCR
 
+exit(0)
 
 def enhance_image_steps(img_path: Path) -> Path:
     """Усиливает контраст и переводит в ч/б для лучшего OCR"""
@@ -25,11 +26,11 @@ def recognize_text_in_folder(folder: Path, lang: str = "en"):
     ocr = PaddleOCR(
         use_angle_cls=False,   # ускоряет, если не нужен поворот текста
         lang=lang,
-        rec_model_dir=None,    # авто-скачивание мобильной модели
-        det_model_dir=None,
-        use_gpu=False,         # на Mac без GPU это быстрее и стабильнее
-        rec_algorithm="CRNN",  # стандарт для мобильных
-        det_algorithm="DB"     # детектор для мобильных
+        # rec_model_dir=None,    # авто-скачивание мобильной модели
+        # det_model_dir=None,
+        # use_gpu=False,         # на Mac без GPU это быстрее и стабильнее
+        # rec_algorithm="CRNN",  # стандарт для мобильных
+        # det_algorithm="DB"     # детектор для мобильных
     )
 
     for i, img_path in enumerate(jpg_files, 1):
@@ -42,7 +43,9 @@ def recognize_text_in_folder(folder: Path, lang: str = "en"):
             continue
 
         try:
-            result = ocr.ocr(str(processed_path), cls=False)
+            result = ocr.predict(str(processed_path))
+            # result = ocr.ocr(str(processed_path))
+            # result = ocr.ocr(str(processed_path), cls=False)
 
             extracted_text = "\n".join(
                 line[1][0] for block in result if block for line in block
