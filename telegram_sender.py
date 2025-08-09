@@ -11,6 +11,10 @@ settings = Settings()
 
 async def send_images_to_group(image_paths: List[Union[str, Path]]) -> None:
     """Send list of images to Telegram group"""
+    if len(image_paths) == 0:
+        logger.info('No images to send to telegram')
+        return
+    
     bot = Bot(token=settings.TELEGRAM_BOT_API)
     
     try:
@@ -18,7 +22,7 @@ async def send_images_to_group(image_paths: List[Union[str, Path]]) -> None:
         for image_path in image_paths:
             path = Path(image_path)
             if path.exists() and path.suffix.lower() in ['.jpg', '.jpeg', '.png', '.gif']:
-                logger.debug(f'Sending to group file {path}')
+                logger.debug(f'Sending to telegram group file {path}')
                 photo = FSInputFile(path)
                 await bot.send_photo(chat_id=settings.TELEGRAM_GROUP_ID, photo=photo)
     finally:
