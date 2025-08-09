@@ -14,51 +14,19 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Копируем всё приложение
 COPY . .
 
-# Создаем скрипт-обертку для cron задачи с отладкой
-RUN echo '#!/bin/bash' > /app/run_script.sh && \
-    echo 'echo "$(date): Cron job started" >> /var/log/cron.log' >> /app/run_script.sh && \
-    echo 'cd /app' >> /app/run_script.sh && \
-    echo 'echo "$(date): Current directory: $(pwd)" >> /var/log/cron.log' >> /app/run_script.sh && \
-    echo 'if [ -f /app/.env ]; then' >> /app/run_script.sh && \
-    echo '  echo "$(date): .env file found" >> /var/log/cron.log' >> /app/run_script.sh && \
-    echo '  export $(cat /app/.env | grep -v "^#" | grep -v "^$" | xargs)' >> /app/run_script.sh && \
-    echo '  echo "$(date): Environment variables loaded" >> /var/log/cron.log' >> /app/run_script.sh && \
-    echo 'else' >> /app/run_script.sh && \
-    echo '  echo "$(date): .env file not found!" >> /var/log/cron.log' >> /app/run_script.sh && \
-    echo 'fi' >> /app/run_script.sh && \
-    echo 'echo "$(date): Starting Python script" >> /var/log/cron.log' >> /app/run_script.sh && \
-    echo 'python /app/main.py >> /var/log/cron.log 2>&1' >> /app/run_script.sh && \
-    echo 'echo "$(date): Python script finished with exit code: $?" >> /var/log/cron.log' >> /app/run_script.sh && \
-    chmod +x /app/run_script.sh
-
-# Копируем файл с задачей для cron
+# Копируем скрипты
+COPY docker/run_script.sh /app/run_script.sh
+COPY docker/entrypoint.sh /entrypoint.sh
 COPY crontab.txt /etc/cron.d/cleanup-cron
+
+# Даем права на скрипты
+RUN chmod +x /app/run_script.sh /entrypoint.sh
 
 # Даем права на cron файл
 RUN chmod 0644 /etc/cron.d/cleanup-cron
 
 # Создаем лог файл и даем права
 RUN touch /var/log/cron.log && chmod 666 /var/log/cron.log
-
-# Создаем entrypoint скрипт
-RUN echo '#!/bin/bash' > /entrypoint.sh && \
-    echo 'echo "Container started at $(date)"' >> /entrypoint.sh && \
-    echo '# Очищаем старые cron задачи' >> /entrypoint.sh && \
-    echo 'crontab -r 2>/dev/null || true' >> /entrypoint.sh && \
-    echo '# Копируем переменные окружения для cron' >> /entrypoint.sh && \
-    echo 'printenv | grep -v "^_" > /etc/environment' >> /entrypoint.sh && \
-    echo '# Устанавливаем cron задачу' >> /entrypoint.sh && \
-    echo 'crontab /etc/cron.d/cleanup-cron' >> /entrypoint.sh && \
-    echo 'echo "Cron jobs installed:"' >> /entrypoint.sh && \
-    echo 'crontab -l' >> /entrypoint.sh && \
-    echo '# Тестируем скрипт сразу' >> /entrypoint.sh && \
-    echo 'echo "Testing script execution..."' >> /entrypoint.sh && \
-    echo '/app/run_script.sh' >> /entrypoint.sh && \
-    echo '# Запускаем cron в фоне' >> /entrypoint.sh && \
-    echo 'cron' >> /entrypoint.sh && \
-    echo '# Следим за логами' >> /entrypoint.sh && \
-    echo 'tail -f /var/log/cron.log' >> /entrypoint.sh && \
-    chmod +x /entrypoint.sh
 
 # Запуск через entrypoint
 CMD ["/entrypoint.sh"]

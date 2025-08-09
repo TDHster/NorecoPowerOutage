@@ -6,14 +6,16 @@ services:
     env_file:
       - .env
     environment:
-      # Добавляем переменные явно, если нужно
       - PYTHONPATH=/app
-      - TZ=Asia/Manila  # Устанавливаем часовой пояс для cron
+      - TZ=Asia/Manila
     volumes:
-      - ./.env:/app/.env:ro  
-
+      - ./.env:/app/.env:ro
+      - noreco_images_data:/app/images  # сохраняем папку images между перезапусками
     logging:
       driver: "json-file"
       options:
         max-size: "10m"
         max-file: "3"
+
+volumes:
+  noreco_images_data:
