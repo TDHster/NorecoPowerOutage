@@ -21,5 +21,8 @@ echo "Testing script execution..."
 # Запускаем cron в фоне
 cron
 
-# Следим за логами
-tail -f /var/log/cron.log
+# Следим за логами cron и приложения
+touch /var/log/cron.log
+tail -f /var/log/cron.log &
+# Дополнительный процесс для вывода логов приложения
+tail -f /proc/1/fd/1
