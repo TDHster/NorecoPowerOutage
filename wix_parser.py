@@ -60,7 +60,7 @@ async def extract_from_page(url: str):
 
         logger.info(f"Founded {len(image_links)} at wixstatic.com/media/:\n")
         for i, link in enumerate(image_links, 1):
-            print(f"{i:02d}: {link}")
+            logger.debug(f"Founded at webpage: {i:02d}: {link}")
 
         await browser.close()
         return image_links

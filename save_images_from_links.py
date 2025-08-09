@@ -18,7 +18,7 @@ def save_images(urls: list[str], save_dir: Path = Path(config.IMAGES_DIR)) -> li
             filepath = save_dir / filename
 
             if filepath.exists():
-                logger.debug(f"{i:02d}. ⏭️ Уже скачано: {filename}")
+                logger.debug(f"{i:02d}. Downloaded: {filename}")
                 continue
 
             logger.debug(f"{i:02d}. ⬇️ Скачиваю: {url}")
@@ -27,7 +27,7 @@ def save_images(urls: list[str], save_dir: Path = Path(config.IMAGES_DIR)) -> li
 
             filepath.write_bytes(response.content)
             saved_files.append(filepath)  # добавляем только что сохранённый файл
-            logger.info(f"    ✅ Сохранено: {filepath}")
+            logger.info(f"    Saved: {filepath}")
 
             time.sleep(random.uniform(2, 5))  # Антибот-таймер
 

@@ -26,7 +26,7 @@ def recognize_text_in_folder(folder: Path, lang: str = "en"):
         logger.info("🛑 Нет JPG-файлов в папке:", folder)
         return
 
-    print(f"🔍 Найдено {len(jpg_files)} .jpg-файлов в {folder}")
+    logger.debug(f"🔍 Найдено {len(jpg_files)} .jpg-файлов в {folder}")
 
     for i, img_path in enumerate(jpg_files, 1):
         logger.debug(f"\n[{i}/{len(jpg_files)}] 🖼️ Обрабатывается: {img_path.name}")
