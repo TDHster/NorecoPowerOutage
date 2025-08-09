@@ -67,7 +67,7 @@ IMAGES_DIR=images
 │   Web Parser    │───▶│  Image Saver    │───▶│   OCR Engine    │
 │  (wix_parser)   │    │(save_images_*)  │    │   (easyocr)     │
 └─────────────────┘    └─────────────────┘    └─────────────────┘
-                                                       │
+                                                        
 ┌─────────────────┐    ┌─────────────────┐             │
 │ Telegram Sender │◀───│  Main Process   │◀────────────┘
 │(telegram_sender)│    │    (main.py)    │
