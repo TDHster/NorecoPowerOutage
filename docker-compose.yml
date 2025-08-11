@@ -10,7 +10,8 @@ services:
       - TZ=Asia/Manila
     volumes:
       - ./.env:/app/.env:ro
-      - noreco_images_data:/app/images  # сохраняем папку images между перезапусками
+      - noreco_images_data:/app/images
+
     logging:
       driver: "json-file"
       options:

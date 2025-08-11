@@ -1,4 +1,5 @@
 #!/bin/bash
+#docker/entrypoint.sh
 
 echo "$(date): Cron job started" >> /var/log/cron.log
 cd /app

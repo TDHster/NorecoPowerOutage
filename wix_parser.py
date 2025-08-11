@@ -49,7 +49,12 @@ async def click_carousel_until_end(page, max_clicks=30):
 
 async def extract_from_page(url: str):
     async with async_playwright() as p:
-        browser = await p.chromium.launch(headless=True)
+        # browser = await p.chromium.launch(headless=True)
+        
+        browser = await p.chromium.launch(
+            headless=True,
+            executable_path="/ms-playwright/chromium-1181/chrome-linux/chrome"
+        )
         page = await browser.new_page()
         await page.goto(url, wait_until="networkidle")
 
