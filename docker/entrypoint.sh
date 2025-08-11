@@ -1,28 +1,20 @@
 #!/bin/bash
 
-echo "Container started at $(date)"
+echo "$(date): Cron job started" >> /var/log/cron.log
+cd /app
+echo "$(date): Current directory: $(pwd)" >> /var/log/cron.log
 
-# Очищаем старые cron задачи
-crontab -r 2>/dev/null || true
+if [ -f /app/.env ]; then
+  echo "$(date): .env file found" >> /var/log/cron.log
+  # Загружаем переменные из .env
+  export $(grep -v '^#' /app/.env | grep -v '^$' | xargs)
+  echo "$(date): Environment variables loaded" >> /var/log/cron.log
+else
+  echo "$(date): .env file not found!" >> /var/log/cron.log
+fi
 
-# Копируем переменные окружения для cron
-printenv | grep -v "^_" > /etc/environment
-
-# Устанавливаем cron задачу
-crontab /etc/cron.d/cleanup-cron
-
-echo "Cron jobs installed:"
-crontab -l
-
-# Тестируем скрипт сразу
-echo "Testing script execution..."
-/app/run_script.sh
-
-# Запускаем cron в фоне
-cron
-
-# Следим за логами cron и приложения
-touch /var/log/cron.log
-tail -f /var/log/cron.log &
-# Дополнительный процесс для вывода логов приложения
-tail -f /proc/1/fd/1
+echo "$(date): Starting Python script" >> /var/log/cron.log
+# Запускаем Python-скрипт с перенаправлением в лог
+python /app/main.py >> /var/log/cron.log 2>&1
+exit_code=$?
+echo "$(date): Python script finished with exit code: $exit_code" >> /var/log/cron.log

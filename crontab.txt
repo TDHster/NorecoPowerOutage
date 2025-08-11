@@ -2,4 +2,4 @@
 # */5 * * * * /app/run_script.sh
 
 # Реальное расписание 
-15 7 * * * /app/run_script.sh
+# 15 7 * * * /app/run_script.sh
