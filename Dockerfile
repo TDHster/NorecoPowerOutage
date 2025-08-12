@@ -13,21 +13,14 @@ RUN python -m playwright install chromium --with-deps
 
 # Копируем скрипты
 COPY . .
-# COPY main.py .
-# COPY wix_parser.py .
-# COPY run_script.sh .
 
 RUN chmod +x run_script.sh
 
-# Копируем crontab
-COPY app-cron /etc/cron.d/app-cron
-
-# Права и владелец — критично
-RUN chmod 0644 /etc/cron.d/app-cron
-RUN chown root:root /etc/cron.d/app-cron
-
-# Создаём лог-файл
+# Создаём лог
 RUN touch /var/log/cron.log
 
-# Запускаем cron и следим за логом
+# 🔥 Добавляем задачу в crontab root
+RUN echo '16 7 * * * /app/run_script.sh >> /var/log/cron.log 2>&1' | crontab -
+
+# Запускаем cron и tail
 CMD ["bash", "-c", "service cron start && tail -f /var/log/cron.log"]
