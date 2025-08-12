@@ -11,6 +11,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Устанавливаем браузеры
 RUN python -m playwright install chromium --with-deps
 
+
 # Копируем скрипты
 COPY . .
 
@@ -23,4 +24,7 @@ RUN touch /var/log/cron.log
 RUN echo '16 7 * * * /app/run_script.sh >> /var/log/cron.log 2>&1' | crontab -
 
 # Запускаем cron и tail
-CMD ["bash", "-c", "service cron start && tail -f /var/log/cron.log"]
+# CMD ["bash", "-c", "service cron start && tail -f /var/log/cron.log"]
+
+COPY app-cron /tmp/app-cron
+CMD ["bash", "-c", "crontab /tmp/app-cron && service cron start && tail -f /var/log/cron.log"]
