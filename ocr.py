@@ -79,7 +79,7 @@ def recognize_text_in_folder(folder: Path, lang: str = "en"):
             continue
         
         try:
-            image = crop_image(image)
+            image = crop_image(image, save_test=True, original_path='images')
         except Exception as e:
             logger.error(f"Error while cropping image {e}")
             continue
