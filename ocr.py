@@ -138,7 +138,7 @@ if __name__ == "__main__":
     processed_count = 0
     for image_file in image_files:
         print(f"\nОбрабатывается: {image_file.name}")
-        result = recognize_text_in_folder(image_file)
+        result = ocr_file(image_file)
         
         if result:
             print(f"Распознанный текст: {result}")
