@@ -47,10 +47,11 @@ def crop_image(image: Image.Image, top: int = 0, bottom: int = 0, left: int = 0,
     cropped_image = image.crop(crop_box)
     
     # Сохраняем тестовое изображение для контроля
-    if save_test and original_path:
-        test_path = original_path.parent / f"cropped_{original_path.stem}.jpg"
-        cropped_image.save(test_path)
-        logger.debug(f"🔍 Тестовое обрезанное изображение сохранено: {test_path.name}")
+    # if save_test and original_path:
+    if save_test:
+        # test_path = original_path.parent / f"cropped_{original_path.stem}.jpg"
+        cropped_image.save('images/cropped.jpg')
+        logger.debug(f"🔍 Тестовое обрезанное изображение сохранено")
     
     return cropped_image
 
