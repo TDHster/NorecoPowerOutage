@@ -13,6 +13,47 @@ def enhance_image_steps(img_path: Path) -> Image.Image:
     image = ImageEnhance.Contrast(image).enhance(2.0)
     return image
 
+def crop_image(image: Image.Image, top: int = 0, bottom: int = 0, left: int = 0, right: int = 0, save_test: bool = True, original_path: Path = None) -> Image.Image:
+    """
+    Обрезает изображение сверху, снизу и по краям на заданные значения.
+    
+    Args:
+        image: PIL Image объект для обрезки
+        top: количество пикселей для обрезки сверху
+        bottom: количество пикселей для обрезки снизу  
+        left: количество пикселей для обрезки слева
+        right: количество пикселей для обрезки справа
+        save_test: сохранить ли тестовое изображение для контроля
+        original_path: путь к исходному файлу (для сохранения тестового)
+    
+    Returns:
+        Image.Image: обрезанное изображение
+    """
+    width, height = image.size
+    
+    # Проверяем границы обрезки
+    if left + right >= width or top + bottom >= height:
+        logger.warning("⚠️ Параметры обрезки слишком большие для изображения")
+        return image
+    
+    # Вычисляем координаты для обрезки
+    crop_box = (
+        left,                    # левая граница
+        top,                     # верхняя граница
+        width - right,           # правая граница
+        height - bottom          # нижняя граница
+    )
+    
+    cropped_image = image.crop(crop_box)
+    
+    # Сохраняем тестовое изображение для контроля
+    if save_test and original_path:
+        test_path = original_path.parent / f"cropped_{original_path.stem}.jpg"
+        cropped_image.save(test_path)
+        logger.debug(f"🔍 Тестовое обрезанное изображение сохранено: {test_path.name}")
+    
+    return cropped_image
+
 
 def recognize_text_in_folder(folder: Path, lang: str = "en"):
     """
@@ -36,6 +77,12 @@ def recognize_text_in_folder(folder: Path, lang: str = "en"):
         except Exception as e:
             logger.error(f"⚠️ Не удалось обработать {img_path.name}: {e}")
             continue
+        
+        # try:
+        #     image = crop_image(image)
+        # except Exception as e:
+        #     logger.error(f"Error while cropping image {e}")
+        #     continue
         
         try:
             # Распознаём текст прямо с Pillow-объекта
