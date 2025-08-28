@@ -1,5 +1,5 @@
-playwright
-# playwright==1.54.0
+# playwright
+playwright==1.40.0
 requests
 numpy==1.26.4
 Pillow
