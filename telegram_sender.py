@@ -4,7 +4,7 @@ from pathlib import Path
 from typing import List, Union
 from aiogram import Bot
 from aiogram.types import FSInputFile
-from ocr import ocr_file
+# from ocr import ocr_file
 from config import Settings
 from logger import logger
 
@@ -24,12 +24,12 @@ async def send_images_to_group(image_paths: List[Union[str, Path]]) -> None:
             path = Path(image_path)
             if path.exists() and path.suffix.lower() in ['.jpg', '.jpeg', '.png', '.gif']:
                 logger.debug(f'Sending to telegram group file {path}')
-                text_on_image = ocr_file(path)
+                # text_on_image = ocr_file(path)
                 photo = FSInputFile(path)
                 await bot.send_photo(
                     chat_id=settings.TELEGRAM_GROUP_ID, 
-                    photo=photo,
-                    caption=text_on_image,
+                    photo=photo
+                    # caption=text_on_image,
                     )
     finally:
         await bot.session.close()
