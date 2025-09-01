@@ -1,2 +1,4 @@
-16 7 * * * /app/run_script.sh >> /var/log/cron.log 2>&1
+# 16 7 * * * /app/run_script.sh >> /var/log/cron.log 2>&1
 # */5 * * * * /app/run_script.sh >> /var/log/cron.log 2>&1
+
+17 7 * * * /app/run_script.sh >> /var/log/cron.log 2>&1

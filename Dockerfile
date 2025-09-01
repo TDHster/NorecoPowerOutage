@@ -2,8 +2,7 @@ FROM mcr.microsoft.com/playwright/python:v1.54.0-jammy
 
 WORKDIR /app
 
-# === УСТАНАВЛИВАЕМ ЧАСОВОЙ ПОЯС (БЕЗОПАСНО И ДОЛЖНО РАБОТАТЬ) ===
-# Устанавливаем tzdata, чтобы TZ работал
+# Устанавливаем tzdata и часовой пояс
 ENV TZ=Asia/Manila
 RUN ln -snf /usr/share/zoneinfo/Asia/Manila /etc/localtime \
     && echo "Asia/Manila" > /etc/timezone \
@@ -15,7 +14,10 @@ RUN ln -snf /usr/share/zoneinfo/Asia/Manila /etc/localtime \
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Устанавливаем браузеры
+# 🔥 КЛЮЧЕВАЯ СТРОКА: Указываем, где искать браузеры
+ENV PLAYWRIGHT_BROWSERS_PATH=0
+
+# Устанавливаем браузеры — теперь они будут в .local-browsers внутри пакета
 RUN python -m playwright install chromium --with-deps
 
 # Копируем скрипты
@@ -27,8 +29,8 @@ RUN chmod +x run_script.sh
 # Создаём лог
 RUN touch /var/log/cron.log
 
-# 🔁 Копируем app-cron во временную папку
+# Копируем crontab
 COPY app-cron /tmp/app-cron
 
-# Запускаем: загружаем crontab, стартуем cron, следим за логом
+# Запускаем: cron + tail
 CMD ["bash", "-c", "crontab /tmp/app-cron && service cron start && tail -f /var/log/cron.log"]

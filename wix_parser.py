@@ -52,8 +52,8 @@ async def extract_from_page(url: str):
         # browser = await p.chromium.launch(headless=True)
         
         browser = await p.chromium.launch(
-            headless=True,
-            executable_path="/ms-playwright/chromium-1181/chrome-linux/chrome"
+            headless=True
+            # executable_path="/ms-playwright/chromium-1181/chrome-linux/chrome"
         )
         page = await browser.new_page()
         await page.goto(url, wait_until="networkidle")
