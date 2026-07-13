@@ -1,7 +1,3 @@
-- .deploy_config.sh
-- deploy_sync.sh
-- deployrestart.sh
-- deployservice.sh
 - venv/
 - .git/
 - __pycache__/

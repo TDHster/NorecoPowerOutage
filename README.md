@@ -1,14 +1,14 @@
 # 🔌 Noreco Power Outage Monitor
 
-An automated system that monitors power outage announcements from Noreco's website, extracts images, performs OCR text recognition, and sends notifications to Telegram.
+Automated system that monitors power outage announcements from Noreco's website, extracts images, and sends notifications to Telegram.
 
 ## ✨ Features
 
 - 🌐 **Web Scraping**: Automatically extracts power outage images from Noreco's carousel
-- 📥 **Image Download**: Downloads and saves all outage announcement images
-- 🔍 **OCR Processing**: Extracts text from images using EasyOCR
+- 📥 **Image Download**: Downloads and saves new outage announcement images
 - 📱 **Telegram Integration**: Sends processed images to Telegram group
-- 🐳 **Docker Support**: Containerized deployment ready
+- 🧹 **Auto-cleanup**: Removes local images no longer present on the site
+- 🐳 **Docker Support**: Containerized deployment via cron
 
 ## 🚀 Quick Start
 
@@ -47,14 +47,9 @@ An automated system that monitors power outage announcements from Noreco's websi
 Create a `.env` file with the following variables:
 
 ```env
-# Logging
 LOG_LEVEL=INFO
-
-# Telegram Settings
 TELEGRAM_BOT_API=your_bot_token_here
 TELEGRAM_GROUP_ID=your_group_id_here
-
-# Website Configuration
 URL=https://www.noreco2.com.ph/power-outage
 MEDIA_FILE_ON_SITE_PATTERN=https://static\.wixstatic\.com/media/[^\"\'\\s>\\\\]+?\.jpg
 IMAGES_DIR=images
@@ -63,15 +58,12 @@ IMAGES_DIR=images
 ## 🏗️ Architecture
 
 ```
-┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
-│   Web Parser    │───▶│  Image Saver    │───▶│   OCR Engine    │
-│  (wix_parser)   │    │(save_images_*)  │    │   (easyocr)     │
-└─────────────────┘    └─────────────────┘    └─────────────────┘
-                                                        
-┌─────────────────┐    ┌─────────────────┐             │
-│ Telegram Sender │◀───│  Main Process   │◀────────────┘
-│(telegram_sender)│    │    (main.py)    │
-└─────────────────┘    └─────────────────┘
+┌──────────────┐    ┌──────────────┐    ┌──────────────┐
+│ Web Parser   │───▶│ Image Saver  │───▶│   Telegram   │
+│ (wix_parser) │    │(save_images) │    │   Sender     │
+└──────────────┘    └──────────────┘    └──────────────┘
+       │                                        │
+       └──── main.py orchestrates ──────────────┘
 ```
 
 ## 📁 Project Structure
@@ -81,46 +73,16 @@ NorecoPowerOutage/
 ├── main.py                    # Main application entry point
 ├── wix_parser.py             # Web scraping and carousel navigation
 ├── save_images_from_links.py # Image downloading functionality
-├── easyocr.py                # OCR text recognition
 ├── telegram_sender.py        # Telegram bot integration
+├── remove_nonlist_file.py    # Cleanup of stale images
 ├── config.py                 # Configuration management
 ├── logger.py                 # Logging setup
 ├── requirements.txt          # Python dependencies
-├── docker-compose.yml        # Docker composition
 ├── Dockerfile               # Container definition
+├── docker-compose.yml        # Docker composition
+├── barangays.csv             # Reference list of municipalities (for future use)
+├── develop_ocr_for_agent.md  # OCR pipeline specification (for future use)
 └── images/                  # Downloaded images directory
-```
-
-## 🔧 Usage
-
-### Basic Usage
-
-```python
-import asyncio
-from main import main
-
-# Run the complete pipeline
-asyncio.run(main())
-```
-
-### Individual Components
-
-```python
-# Web scraping only
-from wix_parser import extract_from_page
-links = await extract_from_page("https://www.noreco2.com.ph/power-outage")
-
-# Image downloading only
-from save_images_from_links import save_images
-paths = save_images(links)
-
-# OCR processing only
-from easyocr import recognize_text_in_folder
-recognize_text_in_folder(Path("images"))
-
-# Telegram sending only
-from telegram_sender import send_images_to_group
-await send_images_to_group(image_paths)
 ```
 
 ## 🐳 Docker Deployment
@@ -136,51 +98,26 @@ docker run --env-file .env noreco-monitor
 
 ## 📋 Dependencies
 
-- **playwright** - Web automation and scraping
-- **requests** - HTTP client for image downloads
-- **aiogram** - Telegram Bot API framework
-- **easyocr** - Optical Character Recognition
-- **pydantic-settings** - Configuration management
-- **Pillow** - Image processing
+- **playwright** — Web automation and scraping
+- **requests** — HTTP client for image downloads
+- **aiogram** — Telegram Bot API framework
+- **pydantic-settings** — Configuration management
 
 ## 🔍 How It Works
 
-1. **Web Scraping**: Uses Playwright to navigate the Noreco website carousel and extract image URLs
-2. **Image Processing**: Downloads images and applies enhancement (grayscale, contrast boost)
-3. **Text Recognition**: Performs OCR on processed images to extract text content
-4. **Notification**: Sends both images and extracted text to configured Telegram group
+1. **Web Scraping**: Playwright navigates the Noreco website carousel and extracts image URLs
+2. **Image Processing**: Downloads new images, removes stale ones
+3. **Notification**: Sends images to configured Telegram group
 
 ## 🛠️ Development
 
-### Running Tests
-
-```bash
-# Run individual modules
-python wix_parser.py
-python save_images_from_links.py
-python easyocr.py
-```
-
 ### Logging
-
-The application uses structured logging with configurable levels:
 
 ```python
 from logger import logger
 logger.info("Processing started")
 logger.debug("Detailed debug information")
 ```
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Submit a pull request
-
-## 📞 Support
-
-For issues and questions, please open an issue on the repository.
 
 ---
 

@@ -1,5 +1,8 @@
 # Спецификация OCR-пайплайна (CLI-only)
 
+> ⚠️ **Важно**: PaddleOCR **не работает на ARM-архитектуре** (Raspberry Pi, Apple Silicon в некоторых конфигурациях). Для использования на Raspberry Pi потребуется альтернатива — например, EasyOCR.
+
+
 Воссоздать проект **docuscan** (PaddleOCR + PyMuPDF + OpenCV) в новом проекте.
 Только CLI — без FastAPI, без Docker. `python main.py договор.pdf` → JSON.
 

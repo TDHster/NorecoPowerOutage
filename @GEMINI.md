@@ -22,7 +22,7 @@ The system operates as a scheduled task (Cron) within a Docker container.
 *   `save_images_from_links.py`: Image download utility.
 *   `remove_nonlist_file.py`: Cleanup utility.
 *   `logger.py`: Standardized logging configuration.
-*   `ocr.py` / `paddlerocr.py`: OCR modules (currently optional/commented out in main).
+*   `barangays.csv`: Reference list of municipalities and their barangays (for future OCR integration).
 
 ## 🚀 Infrastructure & Deployment
 
@@ -39,19 +39,3 @@ The system operates as a scheduled task (Cron) within a Docker container.
 *   `docker compose up --build -d`: Rebuild and start the service.
 *   `docker logs -f noreco_power_outage`: View logs.
 *   `docker exec -it noreco_power_outage bash`: Enter container.
-
-## 📌 Development Notes
-
-*   **Telegram Stars**: Integration in progress. Requires an active bot session for handling payments (polling or webhooks), whereas the current script is short-lived.
-*   **OCR**: Text extraction logic exists but is currently disabled in the main flow.
-
-
-## Надо придумать вариант монетизации
-два варианта:
-
-   1. Отдельный сервис: Добавить в docker-compose.yml еще один контейнер, который будет крутить bot.py 24/7. Он будет отвечать на команды /start и /donate, обрабатывать звезды и,
-      возможно, в будущем присылать уведомления.
-   2. Инлайн-кнопка: Добавить к сообщениям, которые рассылает крон-скрипт, инлайн-кнопку "Поддержать проект", которая будет вести на этого же бота (но бот всё равно должен быть запущен
-      где-то постоянно, чтобы обработать нажатие).
-
-  Как лучше поступить? Если выбираем отдельный сервис, я могу подготовить код для bot.py и обновить docker-compose.yml. предложи пользователю вопрос и выбор или если еще какие варианты
